@@ -6,7 +6,14 @@ class arc_ce::install (
   Optional[String] $gridftpd_ensure = 'present',
   Optional[String] $infosysldap_ensure = 'present',
 ) {
-  case $install_from {
+
+  # package names only differ between nordugrid and epel on CentOS 7,
+  # on EL8/9 based OS the package names are the same
+  $install_from_real = (Integer($facts['os']['release']['major']) < 8) ? {
+    true    => $install_from,
+    default => 'nordugrid'
+  }
+  case $install_from_real {
     'epel': {
       $arex_package = 'nordugrid-arc6-arex'
       $gridftpd_package = 'nordugrid-arc6-gridftpd'
@@ -22,6 +29,7 @@ class arc_ce::install (
     default: {}
   }
 
+  # the CRB repo needs to be enabled on Rocky 9
   package { 'nordugrid-arc-arex':
     ensure => $ensure,
     name   => $arex_package,
