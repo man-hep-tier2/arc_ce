@@ -10,6 +10,7 @@ class arc_ce::config (
   Arc_ce::Vomsprocessing $voms_processing = 'standard',
   # authgroup block definitions
   Hash[String, Hash] $authgroups = {},
+  Hash[String, Hash] $special_authgroups = {},
   Optional[String] $all_authgroup = undef,
   Integer $all_authgroup_order = 999,
   # mapping block definitions
@@ -37,6 +38,7 @@ class arc_ce::config (
 
   # authgroup blocks, uses order 12
   create_resources('arc_ce::authgroup', $authgroups)
+  create_resources('arc_ce::authgroup', $special_authgroups)
 
   # add an authgroup that covers all other configured authgroups
   if $all_authgroup !~ Undef {
