@@ -11,7 +11,7 @@ class arc_ce::install (
   # on EL8/9 based OS the package names are the same
   $install_from_real = (Integer($facts['os']['release']['major']) < 8) ? {
     true    => $install_from,
-    default => 'nordugrid'
+    default => 'epel'
   }
   case $install_from_real {
     'epel': {
