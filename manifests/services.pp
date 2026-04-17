@@ -3,8 +3,6 @@
 class arc_ce::services (
   Stdlib::Ensure::Service $arex_ensure = 'running',
   Boolean $arex_enable = true,
-  Stdlib::Ensure::Service $gridftpd_ensure = 'running',
-  Boolean $gridftpd_enable = true,
   Stdlib::Ensure::Service $bdii_ensure = 'running',
   Boolean $bdii_enable = true,
   Stdlib::Ensure::Service $arex_ws_ensure = 'running',
@@ -23,15 +21,6 @@ class arc_ce::services (
   @service { 'arc-arex-ws':
     ensure     => $arex_ws_ensure,
     enable     => $arex_ws_enable,
-    hasrestart => true,
-    hasstatus  => true,
-    subscribe  => Concat['/etc/arc.conf'],
-  }
-
-  @service { 'arc-service-gridftpd':
-    ensure     => $gridftpd_ensure,
-    name       => 'arc-gridftpd',
-    enable     => $gridftpd_enable,
     hasrestart => true,
     hasstatus  => true,
     subscribe  => Concat['/etc/arc.conf'],

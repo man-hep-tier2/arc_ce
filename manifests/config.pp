@@ -68,43 +68,16 @@ class arc_ce::config (
   # arex block, uses order 17 to 28, leaving 29 as reserved
   contain 'arc_ce::arex'
 
-  # gridftpd block, uses order 30 to 32
-  contain 'arc_ce::gridftpd'
-
   # infosys block, uses order 33 to 40
   contain 'arc_ce::infosys'
 
   # queue blocks, uses order 41
   create_resources('arc_ce::queue', $queues)
 
-  if false {
-    # set up runtime environments
-    class { 'arc_ce::runtime_env': }
-
-    # apply manual fixes
-    # for details check fixes.md
-    $apply_fixes = false
-    if $apply_fixes {
-      file { '/usr/share/arc/submit-condor-job':
-        source => "puppet:///modules/${module_name}/fixes/submit-condor-job.ARC.${apply_fixes}",
-        backup => true,
-      }
-
-      file { '/usr/share/arc/Condor.pm':
-        source => "puppet:///modules/${module_name}/fixes/Condor.pm.ARC.${apply_fixes}",
-        backup => true,
-      }
-
-      file { '/usr/share/arc/glue-generator.pl':
-        source => "puppet:///modules/${module_name}/fixes/glue-generator.pl.ARC.${apply_fixes}",
-        backup => true,
-        mode   => '0755',
-        notify => Exec['create-bdii-config'],
-      }
-      exec { 'create-bdii-config':
-        command     => '/usr/share/arc/create-bdii-config',
-        refreshonly => true,
-      }
-    }
+  # ARC 7.0 added this test setup that makes things fail (error message also involve the real certificate which is confusing
+  file { ['/etc/arc.conf.d/00-testCA-hostcert.conf', '/etc/arc.conf.d/10-testCA-access.conf']:
+     ensure => absent,
+     notify => Service['arc-arex','arc-arex-ws'],
   }
+  
 }

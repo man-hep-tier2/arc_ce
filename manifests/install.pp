@@ -3,26 +3,23 @@
 class arc_ce::install (
   Enum['epel', 'nordugrid'] $install_from = 'epel',
   String $ensure = 'present',
-  Optional[String] $gridftpd_ensure = 'present',
   Optional[String] $infosysldap_ensure = 'present',
 ) {
-
   # package names only differ between nordugrid and epel on CentOS 7,
   # on EL8/9 based OS the package names are the same
   $install_from_real = (Integer($facts['os']['release']['major']) < 8) ? {
     true    => $install_from,
     default => 'epel'
   }
+
   case $install_from_real {
     'epel': {
-      $arex_package = 'nordugrid-arc6-arex'
-      $gridftpd_package = 'nordugrid-arc6-gridftpd'
-      $infosysldap_package = 'nordugrid-arc6-infosys-ldap'
-      $lcmaps_plugin_package = 'nordugrid-arc6-plugins-lcas-lcmaps'
+      $arex_package = 'nordugrid-arc7-arex'
+      $infosysldap_package = 'nordugrid-arc7-infosys-ldap'
+      $lcmaps_plugin_package = 'nordugrid-arc7-plugins-lcas-lcmaps'
     }
     'nordugrid': {
       $arex_package = 'nordugrid-arc-arex'
-      $gridftpd_package = 'nordugrid-arc-gridftpd'
       $infosysldap_package = 'nordugrid-arc-infosys-ldap'
       $lcmaps_plugin_package = 'nordugrid-arc-plugins-lcas-lcmaps'
     }
@@ -33,16 +30,6 @@ class arc_ce::install (
   package { 'nordugrid-arc-arex':
     ensure => $ensure,
     name   => $arex_package,
-  }
-
-  # define virtual resources for non-essential packages
-  # they are realized when the related block in arc.conf is enabled
-
-  if  $gridftpd_ensure !~ Undef {
-    @package { 'arc-package-gridftpd':
-      ensure => $gridftpd_ensure,
-      name   => $gridftpd_package,
-    }
   }
 
   if $infosysldap_ensure !~ Undef {
